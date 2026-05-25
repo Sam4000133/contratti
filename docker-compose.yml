@@ -1,0 +1,14 @@
+# Stack locale "contratti" (frontend Metronic/Next.js).
+# Avvio:  docker compose up --build   →   http://localhost:3000
+#
+# NOTA: backend NestJS + PostgreSQL + Redis + MinIO verranno aggiunti qui
+# come servizi separati nelle fasi successive (vedi ../PIANO.md).
+
+services:
+  contratti:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+    restart: unless-stopped
