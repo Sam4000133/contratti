@@ -1,14 +1,41 @@
-# Stack locale "contratti" (frontend Metronic/Next.js).
-# Avvio:  docker compose up --build   →   http://localhost:3000
-#
-# NOTA: backend NestJS + PostgreSQL + Redis + MinIO verranno aggiunti qui
-# come servizi separati nelle fasi successive (vedi ../PIANO.md).
+# Stack locale "contratti": Next.js (tema Metronic, NextAuth) + PostgreSQL 18.
+# Avvio:  docker compose up -d --build   →   http://localhost:3200
+# Superadmin creato dal seed: owner@kt.com / 12345  (anche demo@kt.com / demo123)
+# NB: credenziali e secret qui sono SOLO per lo sviluppo locale.
+# DATABASE_URL e NEXTAUTH_* sono l'eccezione di bootstrap (vedi PIANO/CLAUDE.md).
 
 services:
+  db:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_DB: contratti
+      POSTGRES_USER: contratti
+      POSTGRES_PASSWORD: contratti
+    volumes:
+      # PostgreSQL 18+: il mount va su /var/lib/postgresql (non più /data)
+      - pg_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U contratti -d contratti"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
   contratti:
     build: .
-    ports:
-      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
     environment:
+      DATABASE_URL: postgresql://contratti:contratti@db:5432/contratti?schema=public
+      DIRECT_URL: postgresql://contratti:contratti@db:5432/contratti?schema=public
+      NEXTAUTH_URL: http://localhost:3200
+      NEXTAUTH_SECRET: dev-only-secret-3f9a1c7b2e8d4a6f9c0b1d2e3f4a5b6c
+      NEXT_PUBLIC_BASE_PATH: ""
       NODE_ENV: production
+    ports:
+      - "3200:3000"
     restart: unless-stopped
+
+volumes:
+  pg_data:

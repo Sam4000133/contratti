@@ -1,13 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import {
-  motion,
-  MotionValue,
-  useInView,
-  useSpring,
-  useTransform,
-} from 'framer-motion';
+import { motion, MotionValue, useInView, useSpring, useTransform } from 'framer-motion';
 
 function Digit({
   place,
@@ -30,31 +24,15 @@ function Digit({
   }, [animatedValue, valueRoundedToPlace]);
 
   return (
-    <div
-      style={{ height: digitHeight }}
-      className="relative w-[1ch] tabular-nums overflow-hidden"
-    >
+    <div style={{ height: digitHeight }} className="relative w-[1ch] tabular-nums overflow-hidden">
       {Array.from({ length: 10 }, (_, i) => (
-        <Number
-          key={i}
-          mv={animatedValue}
-          number={i}
-          digitHeight={digitHeight}
-        />
+        <Number key={i} mv={animatedValue} number={i} digitHeight={digitHeight} />
       ))}
     </div>
   );
 }
 
-function Number({
-  mv,
-  number,
-  digitHeight,
-}: {
-  mv: MotionValue<number>;
-  number: number;
-  digitHeight: number;
-}) {
+function Number({ mv, number, digitHeight }: { mv: MotionValue<number>; number: number; digitHeight: number }) {
   const y = useTransform(mv, (latest: number) => {
     const placeValue = latest % 10;
     const offset = (10 + number - placeValue) % 10;
@@ -69,10 +47,7 @@ function Number({
   });
 
   return (
-    <motion.span
-      style={{ y }}
-      className="absolute inset-0 flex items-center justify-center"
-    >
+    <motion.span style={{ y }} className="absolute inset-0 flex items-center justify-center">
       {number}
     </motion.span>
   );
@@ -175,15 +150,10 @@ export function SlidingNumber({
   const absValue = Math.abs(roundedValue);
 
   // Determine the maximum number of digits needed
-  const maxDigits = Math.max(
-    Math.abs(from).toString().length,
-    Math.abs(to).toString().length,
-  );
+  const maxDigits = Math.max(Math.abs(from).toString().length, Math.abs(to).toString().length);
 
   // Create array of place values (1, 10, 100, 1000, etc.)
-  const places = Array.from({ length: maxDigits }, (_, i) =>
-    Math.pow(10, maxDigits - i - 1),
-  );
+  const places = Array.from({ length: maxDigits }, (_, i) => Math.pow(10, maxDigits - i - 1));
 
   return (
     <div ref={ref} className={`flex items-center ${className}`}>
